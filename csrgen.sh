@@ -9,7 +9,6 @@
 
 # Initialize variables with default values
 inventory_file="hosts.txt"
-error_log="error.log"
 
 # Function to display usage/help message
 display_help() {
