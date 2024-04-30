@@ -6,7 +6,6 @@
 # description: This script automates the generation of Certificate Signing Requests (CSRs) along with their corresponding private keys. The subject information for the CSRs is pre-defined.
 # licence: MIT
 
-
 # Initialize variables with default values
 inventory_file="hosts.txt"
 
@@ -61,9 +60,15 @@ done < $inventory_file
 for namehost in "${hosts_array[@]}"
 do
 
-    openssl req -new -newkey rsa:2048 -nodes -keyout ${namehost%%.*}.key -out ${namehost%%.*}.csr -subj "/C=SXX/ST=XXX/L=XXXXX/O=XXXXXX/OU=XX/CN=${namehost%%.*}" -addext "subjectAltName = DNS:$namehost" -addext "keyUsage = digitalSignature, dataEncipherment" -addext "extendedKeyUsage = serverAuth, clientAuth" 2>/dev/null
+    openssl req -new -newkey rsa:2048 -nodes -keyout ${namehost%%.*}.key -out ${namehost%%.*}.csr -subj "/C=SX/ST=XX/L=XXXXX/O=XXXXXX/OU=XX/CN=${namehost%%.*}" -addext "subjectAltName = DNS:$namehost" -addext "keyUsage = digitalSignature, dataEncipherment" -addext "extendedKeyUsage = serverAuth, clientAuth" 2>/dev/null
 
-    echo "Generated for ${namehost%%.*}."
+    if [[ $? -eq 0 ]]; then
+        echo "Generated for ${namehost%%.*}."
+
+    else
+        echo "Failed to generate for ${namehost%%.*}."
+        exit 1
+    fi
 
 done
 
