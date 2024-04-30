@@ -64,7 +64,7 @@ fi
 # Create array from the provided names
 while read -r host; do
     hosts_array+=("$host")
-done < $inventory_file 
+done < "$inventory_file"
 
 
 # Iterate trough the list of hostnames and generate csr and private key 
