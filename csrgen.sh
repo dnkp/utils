@@ -9,6 +9,15 @@
 # Initialize variables with default values
 inventory_file="hosts.txt"
 
+# Define variables for subject parameters
+country="SX"
+state="XX"
+locality="XXXXX"
+organization="XXXXXX"
+organizational_unit="XX"
+common_name="${namehost%%.*}"
+
+
 # Function to display usage/help message
 display_help() {
     echo "Usage: $0 [OPTIONS]"
@@ -60,7 +69,7 @@ done < $inventory_file
 for namehost in "${hosts_array[@]}"
 do
 
-    openssl req -new -newkey rsa:2048 -nodes -keyout ${namehost%%.*}.key -out ${namehost%%.*}.csr -subj "/C=SX/ST=XX/L=XXXXX/O=XXXXXX/OU=XX/CN=${namehost%%.*}" -addext "subjectAltName = DNS:$namehost" -addext "keyUsage = digitalSignature, dataEncipherment" -addext "extendedKeyUsage = serverAuth, clientAuth" 2>/dev/null
+    openssl req -new -newkey rsa:2048 -nodes -keyout ${namehost%%.*}.key -out ${namehost%%.*}.csr -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizational_unit/CN=$common_name" -addext "subjectAltName = DNS:$namehost" -addext "keyUsage = digitalSignature, dataEncipherment" -addext "extendedKeyUsage = serverAuth, clientAuth" 2>/dev/null
 
     if [[ $? -eq 0 ]]; then
         echo "Generated for ${namehost%%.*}."
