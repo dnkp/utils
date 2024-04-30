@@ -20,7 +20,11 @@ display_help() {
     exit 0
 }
 
-
+# Check if OpenSSL is installed
+if ! command -v openssl &>/dev/null; then
+    echo "Error: OpenSSL is not installed. Please install it before running this script."
+    exit 1
+fi
 
 
 # Parse command line arguments
