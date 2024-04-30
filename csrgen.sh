@@ -3,7 +3,8 @@
 # title: csrgen.sh
 # author: dnkp
 # date: 20240403
-# description: This script automates the generation of Certificate Signing Requests (CSRs) along with their corresponding private keys. The subject information for the CSRs is pre-defined.
+# description: This script automates the generation of Certificate Signing Requests (CSRs) along with their corresponding private keys.
+# The subject information for the CSRs is pre-defined.
 # licence: MIT
 
 # Initialize variables with default values
@@ -56,6 +57,7 @@ done
 # Check if provided inventory file exists
 if [[ ! -f "$inventory_file" ]]; then
     echo "Inventory file '$inventory_file' does not exist in the directory."
+    display_help
     exit 1
 fi
 
@@ -68,15 +70,23 @@ done < $inventory_file
 # Iterate trough the list of hostnames and generate csr and private key 
 for namehost in "${hosts_array[@]}"
 do
+    # Cover the case when provided hostname is longer than 64 characters
+    cn_namehost=$namehost
 
-    openssl req -new -newkey rsa:2048 -nodes -keyout ${namehost%%.*}.key -out ${namehost%%.*}.csr -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizational_unit/CN=$common_name" -addext "subjectAltName = DNS:$namehost" -addext "keyUsage = digitalSignature, dataEncipherment" -addext "extendedKeyUsage = serverAuth, clientAuth" 2>/dev/null
+
+    # Check if hostname is longer than maximum allowed 64 characters, if longer strip it.
+    if [[ ${#namehost} -gt 64 ]] ; then
+    echo "Hostname '$namehost' is longer than maximum allowed 64 characters. Hostname stripped to '${namehost%%.*}'."
+    cn_namehost=${namehost%%.*}
+    fi
+
+    openssl req -new -newkey rsa:2048 -nodes -keyout ${namehost%%.*}.key -out ${namehost%%.*}.csr -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizational_unit/CN=${cn_namehost}" -addext "subjectAltName = DNS:$namehost" -addext "keyUsage = digitalSignature, dataEncipherment" -addext "extendedKeyUsage = serverAuth, clientAuth" 2>/dev/null
 
     if [[ $? -eq 0 ]]; then
-        echo "Generated for ${namehost%%.*}."
+        echo "Generated for ${cn_namehost}."
 
     else
-        echo "Failed to generate for ${namehost%%.*}."
-        exit 1
+        echo "Failed to generate for ${cn_namehost}."
     fi
 
 done
