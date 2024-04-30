@@ -2,8 +2,9 @@
 
 # title: csrgen.sh
 # author: dnkp
-# date: 20240403
+# date: 20240430
 # description: This script automates the generation of Certificate Signing Requests (CSRs) along with their corresponding private keys.
+# Generated key is rsa:2048, CSR includes SAN fields
 # The subject information for the CSRs is pre-defined.
 # licence: MIT
 
@@ -16,7 +17,6 @@ state="XX"
 locality="XXXXX"
 organization="XXXXXX"
 organizational_unit="XX"
-common_name="${namehost%%.*}"
 
 
 # Function to display usage/help message
